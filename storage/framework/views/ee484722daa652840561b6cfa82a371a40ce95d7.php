@@ -1,0 +1,1 @@
+<?php /**PATH C:\xampp\htdocs\Sistemas\resources\views/front/theme/preloader.blade.php ENDPATH**/ ?>

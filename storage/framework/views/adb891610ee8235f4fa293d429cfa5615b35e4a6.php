@@ -1,0 +1,1 @@
+<?php /**PATH C:\laragon\www\catalogo_whatsapp\resources\views/front/theme/preloader.blade.php ENDPATH**/ ?>

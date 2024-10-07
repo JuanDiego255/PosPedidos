@@ -1,0 +1,1 @@
+<?php /**PATH /home/davcromc/tienda1.sistemaslvam.com/resources/views/front/theme/preloader.blade.php ENDPATH**/ ?>

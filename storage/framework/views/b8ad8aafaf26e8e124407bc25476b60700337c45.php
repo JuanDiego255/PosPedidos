@@ -1,0 +1,1 @@
+<?php /**PATH /home/u244677816/domains/stocky.uno/public_html/ecostore/resources/views/front/theme/preloader.blade.php ENDPATH**/ ?>
