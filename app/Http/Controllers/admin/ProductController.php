@@ -81,6 +81,8 @@ class ProductController extends Controller
                     }
                 }
             }
+            
+            $extrasToSync = [];
             foreach ($request->extras_name as $key => $no) {
                 if (@$no != "" && @$request->extras_price[$key] != "") {
                     $extras = new Extra();
@@ -88,6 +90,12 @@ class ProductController extends Controller
                     $extras->name = $no;
                     $extras->price = $request->extras_price[$key];
                     $extras->save();
+                    $extrasToSync[] = [
+                        'id' => $extras->id,
+                        'product_id' => $extras->item_id,
+                        'name' => $extras->name,
+                        'price' => $extras->price
+                    ];
                 }
             }
 
@@ -108,7 +116,8 @@ class ProductController extends Controller
                     'descripcion' => $request->description,
                     'precio_compra' => $original_price,
                     'precio_venta' => $price,
-                    'impuesto' => $request->tax
+                    'impuesto' => $request->tax,
+                    'extras' => $extrasToSync
                 ]
             ]);
 
@@ -224,7 +233,8 @@ class ProductController extends Controller
                     'descripcion' => $request->description,
                     'precio_compra' => $original_price,
                     'precio_venta' => $price,
-                    'impuesto' => $request->tax
+                    'impuesto' => $request->tax,
+                    'extras' => $this->prepareExtras($request)
                 ]
             ]);
 
@@ -246,6 +256,20 @@ class ProductController extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', trans('messages.wrong'));
         }
+    }
+    private function prepareExtras($request)
+    {
+        $extras = [];
+        foreach ($request->extras_name as $key => $no) {
+            if (!empty($no) && !empty($request->extras_price[$key])) {
+                $extras[] = [
+                    'id' => $request->extras_id[$key] ?? null, // Usar el ID si existe, de lo contrario crear uno nuevo
+                    'name' => $no,
+                    'price' => $request->extras_price[$key]
+                ];
+            }
+        }
+        return $extras;
     }
     public function update_image(Request $request)
     {
