@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderDetails;
 use App\Models\Transaction;
 use App\Models\Payment;
+use GuzzleHttp\Client;
 use Session;
 use App\Models\PricingPlan;
 use App\Models\SystemAddons;
@@ -49,7 +50,7 @@ class helper
             exit;
         }
     }
-    
+
     public static function getStoreStatus($vendor_id)
     {
         date_default_timezone_set(self::appdata($vendor_id)->timezone);
@@ -65,15 +66,15 @@ class helper
         ];
 
         $currentDay = now()->format('l');
-        $currentDay = isset($dayMapping[$currentDay])? $dayMapping[$currentDay]: '';
+        $currentDay = isset($dayMapping[$currentDay]) ? $dayMapping[$currentDay] : '';
 
         $timings = self::timings($vendor_id);
-        
+
         $storeStatus = 'Cerrado';
 
         foreach ($timings as $timing) {
             if ($timing['day'] === $currentDay) {
-                if ($timing['is_always_close'] == 1){
+                if ($timing['is_always_close'] == 1) {
                     break;
                 }
                 $currentTime = Carbon::now();
@@ -88,7 +89,7 @@ class helper
                     $storeStatus = 'Abierto';
                 }
             }
-        }      
+        }
 
         $statusMapping = [
             'Abierto' => 'Abierto',
@@ -129,70 +130,70 @@ class helper
 
     public static function image_path($image)
     {
-        $path = asset(env('ASSETSPATHURL').'images/not-found');
+        $path = asset(env('ASSETSPATHURL') . 'images/not-found');
         if (Str::contains($image, 'nodata')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/' . $image);
         }
         if (Str::contains($image, 'authformbgimage')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/about/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/about/' . $image);
         }
         if (Str::contains($image, 'theme-')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/theme/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/theme/' . $image);
         }
         if (Str::contains($image, 'feature-')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/feature/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/feature/' . $image);
         }
         if (Str::contains($image, 'testimonial-')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/testimonials/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/testimonials/' . $image);
         }
         if (Str::contains($image, 'screenshot-')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/screenshot/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/screenshot/' . $image);
         }
         if (Str::contains($image, 'banktransfer') || Str::contains($image, 'cod') || Str::contains($image, 'razorpay') || Str::contains($image, 'stripe') || Str::contains($image, 'wallet') || Str::contains($image, 'flutterwave') || Str::contains($image, 'paystack') || Str::contains($image, 'mercadopago') || Str::contains($image, 'paypal') || Str::contains($image, 'myfatoorah') || Str::contains($image, 'toyyibpay') || Str::contains($image, 'payment')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/about/payment/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/about/payment/' . $image);
         }
         if (Str::contains($image, 'res')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/about/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/about/' . $image);
         }
         if (Str::contains($image, 'logo')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/about/logo/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/about/logo/' . $image);
         }
         if (Str::contains($image, 'favicon')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/about/favicon/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/about/favicon/' . $image);
         }
         if (Str::contains($image, 'og_image')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/about/og_image/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/about/og_image/' . $image);
         }
         if (Str::contains($image, 'item-')) {
-            $path = asset(env('ASSETSPATHURL').'item/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'item/' . $image);
         }
         if (Str::contains($image, 'banner') || Str::contains($image, 'promotion-')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/banners/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/banners/' . $image);
         }
         if (Str::contains($image, 'order')) {
-            $path = asset(env('ASSETSPATHURL').'front/images/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'front/images/' . $image);
         }
         if (Str::contains($image, 'profile')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/profile/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/profile/' . $image);
         }
         if (Str::contains($image, 'category')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/category/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/category/' . $image);
         }
         if (Str::contains($image, 'blog')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/blog/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/blog/' . $image);
         }
         if (Str::contains($image, 'flag')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/language/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/language/' . $image);
         }
         if (Str::contains($image, 'cover')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/coverimage/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/coverimage/' . $image);
         }
         if (Str::contains($image, 'subscribe_bg')) {
-            $path = asset(env('ASSETSPATHURL').'admin-assets/images/subscribe/' . $image);
+            $path = asset(env('ASSETSPATHURL') . 'admin-assets/images/subscribe/' . $image);
         }
         return $path;
     }
-   
+
     public static function currency_formate($price, $vendor_id)
     {
         if (@helper::appdata($vendor_id)->currency_position == "left") {
@@ -219,7 +220,7 @@ class helper
 
     public static function get_city()
     {
-        $city =  City::where('is_deleted','2')->where('is_available','1')->get();
+        $city =  City::where('is_deleted', '2')->where('is_available', '1')->get();
         return $city;
     }
 
@@ -264,7 +265,7 @@ class helper
         $timings = Timing::where('vendor_id', @$vdata)->get();
         return $timings;
     }
-    
+
     public static function vendorinfo($vendor = null)
     {
         // Change made by Hadi to set store page as default home page
@@ -282,7 +283,7 @@ class helper
 
     public static function getcartcount($vendor_id, $user_id)
     {
-        $host = $_SERVER['HTTP_HOST'];  
+        $host = $_SERVER['HTTP_HOST'];
         if ($host  ==  env('WEBSITE_HOST')) {
             $vdata = $vendor_id;
         }
@@ -294,22 +295,22 @@ class helper
         $session_id = Session::getId();
 
         if ($user_id != "") {
-            
+
             $cnt = Cart::where('vendor_id', $vdata)->where('user_id', $user_id)->count();
         } else {
-            $cnt = Cart::where('vendor_id', $vdata)->where('session_id',$session_id)->count();
+            $cnt = Cart::where('vendor_id', $vdata)->where('session_id', $session_id)->count();
         }
-      
+
         return $cnt;
     }
 
 
     public static function checkplan($id, $type)
-    {        
+    {
         $check = SystemAddons::where('unique_identifier', 'subscription')->first();
 
         if (@$check->activated != 1) {
-            return response()->json(['status' => 1, 'message' => '', 'expdate' => "", 'showclick' => "0", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '','bank_transfer' => ''], 200);
+            return response()->json(['status' => 1, 'message' => '', 'expdate' => "", 'showclick' => "0", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => ''], 200);
         }
         $host = $_SERVER['HTTP_HOST'];
         if ($host  ==  env('WEBSITE_HOST')) {
@@ -327,32 +328,32 @@ class helper
         if ($vendorinfo->allow_without_subscription != 1) {
             if (!empty($checkplan)) {
                 if ($vendorinfo->is_available == 2) {
-                    return response()->json(['status' => 2, 'message' => trans('messages.account_blocked_by_admin'), 'showclick' => "0", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '','bank_transfer' => ''], 200);
+                    return response()->json(['status' => 2, 'message' => trans('messages.account_blocked_by_admin'), 'showclick' => "0", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => ''], 200);
                 }
                 if ($checkplan->payment_type == 'banktransfer') {
                     if ($checkplan->status == 1) {
-                        return response()->json(['status' => 2, 'message' => trans('messages.bank_request_pending'), 'showclick' => "0", 'plan_message' => trans('messages.bank_request_pending'), 'plan_date' => '', 'checklimit' => '','bank_transfer' => '1'], 200);
+                        return response()->json(['status' => 2, 'message' => trans('messages.bank_request_pending'), 'showclick' => "0", 'plan_message' => trans('messages.bank_request_pending'), 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => '1'], 200);
                     } elseif ($checkplan->status == 3) {
-                        return response()->json(['status' => 2, 'message' => trans('messages.bank_request_rejected'), 'showclick' => "1", 'plan_message' => trans('messages.bank_request_rejected'), 'plan_date' => '', 'checklimit' => '','bank_transfer' => ''], 200);
+                        return response()->json(['status' => 2, 'message' => trans('messages.bank_request_rejected'), 'showclick' => "1", 'plan_message' => trans('messages.bank_request_rejected'), 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => ''], 200);
                     }
                 }
                 if ($checkplan->expire_date != "") {
                     if (date('Y-m-d') > $checkplan->expire_date) {
 
-                        return response()->json(['status' => 2, 'message' => trans('messages.plan_expired'), 'expdate' => $checkplan->expire_date, 'showclick' => "1", 'plan_message' => trans('messages.plan_expired'), 'plan_date' => $checkplan->expire_date, 'checklimit' => '','bank_transfer' => ''], 200);
+                        return response()->json(['status' => 2, 'message' => trans('messages.plan_expired'), 'expdate' => $checkplan->expire_date, 'showclick' => "1", 'plan_message' => trans('messages.plan_expired'), 'plan_date' => $checkplan->expire_date, 'checklimit' => '', 'bank_transfer' => ''], 200);
                     }
                 }
                 if (Str::contains(request()->url(), 'admin')) {
                     if ($checkplan->service_limit != -1) {
                         if ($totalservice >= $checkplan->service_limit) {
                             if (Auth::user()->type == 1) {
-                                return response()->json(['status' => 2, 'message' => trans('messages.products_limit_exceeded'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => '', 'checklimit' => '','bank_transfer' => ''], 200);
+                                return response()->json(['status' => 2, 'message' => trans('messages.products_limit_exceeded'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => ''], 200);
                             }
                             if (Auth::user()->type == 2) {
                                 if ($checkplan->expire_date != "") {
-                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_products_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'service','bank_transfer' => ''], 200);
+                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_products_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'service', 'bank_transfer' => ''], 200);
                                 } else {
-                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_products_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.lifetime_subscription'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'service','bank_transfer' => ''], 200);
+                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_products_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.lifetime_subscription'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'service', 'bank_transfer' => ''], 200);
                                 }
                             }
                         }
@@ -360,13 +361,13 @@ class helper
                     if ($checkplan->appoinment_limit != -1) {
                         if ($checkplan->appoinment_limit <= 0) {
                             if (Auth::user()->type == 1) {
-                                return response()->json(['status' => 2, 'message' => trans('messages.order_limit_exceeded'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => '', 'checklimit' => '','bank_transfer' => ''], 200);
+                                return response()->json(['status' => 2, 'message' => trans('messages.order_limit_exceeded'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => ''], 200);
                             }
                             if (Auth::user()->type == 2) {
                                 if ($checkplan->expire_date != "") {
-                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_order_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'booking','bank_transfer' => ''], 200);
+                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_order_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'booking', 'bank_transfer' => ''], 200);
                                 } else {
-                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_order_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.lifetime_subscription'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'service','bank_transfer' => ''], 200);
+                                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_order_limit_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.lifetime_subscription'), 'plan_date' => $checkplan->expire_date, 'checklimit' => 'service', 'bank_transfer' => ''], 200);
                                 }
                             }
                         }
@@ -375,40 +376,41 @@ class helper
                 if ($type == 3) {
                     if ($checkplan->appoinment_limit != -1) {
                         if ($checkplan->appoinment_limit <= 0) {
-                            return response()->json(['status' => 2, 'message' => trans('messages.front_store_unavailable'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => '', 'checklimit' => 'booking','bank_transfer' => ''], 200);
+                            return response()->json(['status' => 2, 'message' => trans('messages.front_store_unavailable'), 'expdate' => '', 'showclick' => "1", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => '', 'checklimit' => 'booking', 'bank_transfer' => ''], 200);
                         }
                     }
                 }
                 if ($checkplan->expire_date != "") {
 
-                    return response()->json(['status' => 1, 'message' => trans('messages.plan_expires'), 'expdate' => $checkplan->expire_date, 'showclick' => "0", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => $checkplan->expire_date, 'checklimit' => '','bank_transfer' => ''], 200);
+                    return response()->json(['status' => 1, 'message' => trans('messages.plan_expires'), 'expdate' => $checkplan->expire_date, 'showclick' => "0", 'plan_message' => trans('messages.plan_expires'), 'plan_date' => $checkplan->expire_date, 'checklimit' => '', 'bank_transfer' => ''], 200);
                 } else {
 
-                    return response()->json(['status' => 1, 'message' => trans('messages.lifetime_subscription'), 'expdate' => $checkplan->expire_date, 'showclick' => "0", 'plan_message' => trans('messages.lifetime_subscription'), 'plan_date' => $checkplan->expire_date, 'checklimit' => '','bank_transfer' => ''], 200);
+                    return response()->json(['status' => 1, 'message' => trans('messages.lifetime_subscription'), 'expdate' => $checkplan->expire_date, 'showclick' => "0", 'plan_message' => trans('messages.lifetime_subscription'), 'plan_date' => $checkplan->expire_date, 'checklimit' => '', 'bank_transfer' => ''], 200);
                 }
             } else {
                 if (Auth::user()->type == 1) {
-                    return response()->json(['status' => 2, 'message' => trans('messages.doesnot_select_any_plan'), 'expdate' => '', 'showclick' => "0", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '','bank_transfer' => ''], 200);
+                    return response()->json(['status' => 2, 'message' => trans('messages.doesnot_select_any_plan'), 'expdate' => '', 'showclick' => "0", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => ''], 200);
                 }
                 if (Auth::user()->type == 2) {
-                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_plan_purchase_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '','bank_transfer' => ''], 200);
+                    return response()->json(['status' => 2, 'message' => trans('messages.vendor_plan_purchase_message'), 'expdate' => '', 'showclick' => "1", 'plan_message' => '', 'plan_date' => '', 'checklimit' => '', 'bank_transfer' => ''], 200);
                 }
             }
         } else {
             return response()->json(['status' => 1, 'message' => trans('messages.success')], 200);
         }
     }
-    
-    public static function payment_method_name($id){
-        $details = Payment::where('id',$id)->first(['id','payment_name']);
-        if($details){
+
+    public static function payment_method_name($id)
+    {
+        $details = Payment::where('id', $id)->first(['id', 'payment_name']);
+        if ($details) {
             return $details->payment_name;
-        }else{
+        } else {
             return '-';
         }
     }
-    
-    public static function createorder($vendor,$user_id,$session_id,$payment_type_data, $payment_id, $customer_email, $customer_name, $customer_mobile, $stripeToken, $grand_total, $delivery_charge, $address, $building, $landmark, $postal_code, $discount_amount, $sub_total, $tax, $delivery_time, $delivery_date, $delivery_area, $couponcode, $order_type, $notes , $table_id)
+
+    public static function createorder($vendor, $user_id, $session_id, $payment_type_data, $payment_id, $customer_email, $customer_name, $customer_mobile, $stripeToken, $grand_total, $delivery_charge, $address, $building, $landmark, $postal_code, $discount_amount, $sub_total, $tax, $delivery_time, $delivery_date, $delivery_area, $couponcode, $order_type, $notes, $table_id)
     {
         try {
             $host = $_SERVER['HTTP_HOST'];
@@ -419,24 +421,23 @@ class helper
             // if the current host doesn't contain the website domain (meaning, custom domain)
             else {
                 $vendorinfo = Settings::where('custom_domain', $host)->first();
-                
+
                 $vdata = $vendorinfo->vendor_id;
             }
             date_default_timezone_set(@helper::appdata($vdata)->timezone);
-            
 
-            if ($user_id != "" || $user_id !=null) {
-                $data = Cart::where('user_id', $user_id)->where('vendor_id',$vdata)->get();
+
+            if ($user_id != "" || $user_id != null) {
+                $data = Cart::where('user_id', $user_id)->where('vendor_id', $vdata)->get();
             } else {
-                $data = Cart::where('session_id', $session_id)->where('vendor_id',$vdata)->get();
+                $data = Cart::where('session_id', $session_id)->where('vendor_id', $vdata)->get();
             }
             $order_number = substr(str_shuffle(str_repeat("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10)), 0, 10);
-            if($data->count() > 0)
-            { 
-                
+            if ($data->count() > 0) {
+
                 //if (strtolower($payment_type_data) == "cod") { //old code
                 // if ($payment_id == 11 || $payment_id == 29  || $payment_id == 30) { //new code
-                    $payment_type = $payment_id;
+                $payment_type = $payment_id;
                 // }
                 // if ($payment_type_data == 12) {
                 //     $payment_type = 2;
@@ -462,7 +463,7 @@ class helper
                 // if ($payment_type_data == 19) {
                 //     $payment_type = 10;
                 // }
-               
+
                 if ($order_type == "2") {
                     $delivery_charge = "0.00";
                     $address = "";
@@ -481,8 +482,8 @@ class helper
                 } else {
                     $discount_amount = $discount_amount;
                 }
-                
-               
+
+
                 $order = new Order;
                 $order->vendor_id = $vdata;
                 $order->user_id = $user_id;
@@ -511,9 +512,10 @@ class helper
                 $order->order_notes = $notes;
                 $order->save();
                 $order_id = DB::getPdo()->lastInsertId();
+                $data_to_api = $data;
 
                 foreach ($data as $value) {
-                    
+
                     $OrderPro = new OrderDetails;
                     $OrderPro->order_id = $order_id;
                     $OrderPro->item_id = $value['item_id'];
@@ -533,36 +535,36 @@ class helper
                     $OrderPro->qty = $value['qty'];
                     $OrderPro->save();
                 }
-    
-                if ($user_id != "" || $user_id !=null) {
-                    $data = Cart::where('user_id', $user_id )->delete();
+
+                if ($user_id != "" || $user_id != null) {
+                    $data = Cart::where('user_id', $user_id)->delete();
                 } else {
                     $data = Cart::where('session_id', $session_id)->delete();
                 }
-                
+
                 session()->forget(['offer_amount', 'offer_code', 'offer_type']);
-    
-                if ($user_id != "" || $user_id !=null) {
+
+                if ($user_id != "" || $user_id != null) {
                     $count = Cart::where('user_id', $user_id)->count();
                 } else {
                     $count = Cart::where('session_id', $session_id)->count();
                 }
-                
+
                 session()->put('cart', $count);
-                
+
                 $trackurl = URL::to(@$vendorinfo->slug . '/track-order/' . $order_number);
                 $emaildata = @helper::emailconfigration($vdata);
-                Config::set('mail',$emaildata);
+                Config::set('mail', $emaildata);
                 @helper::create_order_invoice($customer_email, $customer_name, $vendorinfo->email, $vendorinfo->name, $order_number, $order_type, null, null, @helper::currency_formate($grand_total, $vdata), $trackurl);
-                
+
                 $title = trans('labels.order_update');
                 $body = "Congratulations! Your store just received a new order " . $order_number;
-    
+
                 @helper::push_notification($vendorinfo->token, $title, $body, "order", $order->id);
-    
+
                 $checkplan = Transaction::where('vendor_id', $vdata)->orderByDesc('id')->first();
-    
-                if(!empty($checkplan)) {
+
+                if (!empty($checkplan)) {
                     if ($checkplan->appoinment_limit != -1) {
                         $checkplan->appoinment_limit -= 1;
                         $checkplan->save();
@@ -571,13 +573,40 @@ class helper
 
                 session()->forget('table_id');
 
+                try {
+                    $client = new Client();
+                    $response = $client->post('https://pos.safeworsolutions.com/api/create-order', [
+                        'json' => [
+                            'total' => $grand_total,
+                            'notes' => $notes,
+                            'products' => $data_to_api
+                        ]
+                    ]);
+
+                    // Verificar el código de estado de la respuesta
+                    if ($response->getStatusCode() == 200) {
+                        // Decodificar el cuerpo de la respuesta (en JSON)
+                        $responseData = json_decode($response->getBody()->getContents(), true);
+
+                        // Verificar si el JSON tiene un 'status' y un 'msg'
+                        if (isset($responseData['status']) && $responseData['status'] === true) {
+                            //DB::commit();
+                            //return redirect('admin/products/')->with('success', $responseData['msg']);
+                        } else {
+                            //return redirect('admin/products/')->with('error', $responseData['msg'] ?? 'Error desconocido');
+                        }
+                    } else {
+                        // Mostrar el contenido de la respuesta si el código no es 200
+                        return $response->getBody()->getContents();
+                    }
+                } catch (Exception $th) {
+                    return $th->getMessage();
+                }
+
                 return $order_number;
+            } else {
+                return -1;
             }
-         else
-         {
-            return -1;
-         }
-           
         } catch (Exception $th) {
             return $th->getMessage();
         }
@@ -637,7 +666,7 @@ class helper
     public static function vendor_register($vendor_name, $vendor_email, $vendor_mobile, $vendor_password, $firebasetoken, $slug, $google_id, $facebook_id, $city_id, $area_id)
     {
         try {
-           
+
             if (!empty($slug) || $slug != null) {
                 $slug;
             } else {
@@ -695,7 +724,7 @@ class helper
                 $timedata->is_always_close = '2';
                 $timedata->save();
             }
-            $paymentlist = Payment::select('payment_name', 'currency', 'image','is_activate')->where('vendor_id', '1')->where('id', "!=", "6")->get();
+            $paymentlist = Payment::select('payment_name', 'currency', 'image', 'is_activate')->where('vendor_id', '1')->where('id', "!=", "6")->get();
             foreach ($paymentlist as $payment) {
                 $gateway = new Payment;
                 $gateway->vendor_id = $vendor_id;
@@ -812,12 +841,10 @@ Click here for next order 👇
         try {
             Mail::send('email.subscription', $data, function ($message) use ($data) {
                 $message->to($data['vendor_email'])->subject($data['title']);
-                
             });
 
             Mail::send('email.adminsubscription', $adminemail, function ($message) use ($adminemail) {
                 $message->to($adminemail['admin_email'])->subject($adminemail['title']);
-                
             });
             return 1;
         } catch (\Throwable $th) {
@@ -832,12 +859,10 @@ Click here for next order 👇
         try {
             Mail::send('email.banktransfervendor', $data, function ($message) use ($data) {
                 $message->to($data['vendor_email'])->subject($data['title']);
-                
             });
 
             Mail::send('email.banktransferadmin', $adminemail, function ($message) use ($adminemail) {
                 $message->to($adminemail['admin_email'])->subject($adminemail['title']);
-                
             });
             return 1;
         } catch (\Throwable $th) {
@@ -852,7 +877,6 @@ Click here for next order 👇
         try {
             Mail::send('email.banktransferreject', $data, function ($message) use ($data) {
                 $message->to($data['vendor_email'])->subject($data['title']);
-                
             });
             return 1;
         } catch (\Throwable $th) {
@@ -863,7 +887,7 @@ Click here for next order 👇
     public static function vendor_contact_data($vendor_name, $vendor_email, $full_name, $useremail, $usermobile, $usermessage)
     {
         $data = ['title' => "Inquiry", 'vendor_name' => $vendor_name, 'vendor_email' => $vendor_email, 'full_name' => $full_name, 'useremail' => $useremail, 'usermobile' => $usermobile, 'usermessage' => $usermessage];
-        
+
         try {
             Mail::send('email.vendorcontcatform', $data, function ($message) use ($data) {
                 $message->to($data['vendor_email'])->subject($data['title']);
@@ -881,12 +905,11 @@ Click here for next order 👇
         $vendordata = ['title' => "Order Invoice", 'order_type' => $order_type, 'customer_email' => $customer_email, 'customer_name' => $customer_name, 'company_email' => $companyemail, 'company_name' => $companyname, 'order_number' => $order_number, 'grand_total' => $grand_total, 'trackurl' => $trackurl];
         try {
             Mail::send('email.customerorderemail', $data, function ($message) use ($data) {
-                $message->to($data['customer_email'])->subject($data['title']);     
+                $message->to($data['customer_email'])->subject($data['title']);
             });
 
             Mail::send('email.vendororderemail', $vendordata, function ($companymessage) use ($vendordata) {
                 $companymessage->to($vendordata['company_email'])->subject($vendordata['title']);
-               
             });
             return 1;
         } catch (\Throwable $th) {
@@ -896,7 +919,7 @@ Click here for next order 👇
 
     public static function order_status_email($email, $name, $title, $message_text, $vendor_id)
     {
-        $data = ['email' => $email, 'name' => $name, 'title' => $title, 'message_text' => $message_text,'logo' => @helper::image_path(@helper::appdata($vendor_id)->logo)];
+        $data = ['email' => $email, 'name' => $name, 'title' => $title, 'message_text' => $message_text, 'logo' => @helper::image_path(@helper::appdata($vendor_id)->logo)];
         try {
             Mail::send('email.orderemail', $data, function ($message) use ($data) {
                 $message->to($data['email'])->subject($data['title']);
@@ -913,7 +936,6 @@ Click here for next order 👇
         try {
             Mail::send('email.sendpassword', $data, function ($message) use ($data) {
                 $message->to($data['email'])->subject($data['title']);
-
             });
             return 1;
         } catch (\Throwable $th) {
@@ -949,33 +971,33 @@ Click here for next order 👇
     }
     public static function whatsappmessage($order_number, $vendor_slug, $vendordata)
     {
-        $pagee[] ="";
+        $pagee[] = "";
         $orderdata = Order::where('order_number', $order_number)->first();
         $data = OrderDetails::where('order_id', $orderdata->id)->get();
-            foreach ($data as $value) {
-                if ($value['variants_id'] != "") {
-                    $item_p = $value['qty'] * $value['variants_price'];
-                    $variantsdata = '(' . $value['variants_name'] . ')';
-                } else {
-                    $variantsdata = "";
-                    $item_p = $value['qty'] * $value['price'];
-                }
-                $extras_id = explode(",", $value['extras_id']);
-                $extras_name = explode(",", $value['extras_name']);
-                $extras_price = explode(",", $value['extras_price']);
-                $item_message = @helper::appdata($vendordata->id)->item_message;
-                $itemvar = ["{qty}", "{item_name}", "{variantsdata}", "{item_price}"];
-                $newitemvar = [$value['qty'], $value['item_name'], $variantsdata, @helper::currency_formate($item_p, $vendordata->id)];
-                $pagee[] = str_replace($itemvar, $newitemvar, $item_message);
-                if ($value['extras_id'] != "") {
-                    foreach ($extras_id as $key => $addons) {
-                        @$pagee[] .= "👉" . $extras_name[$key] . ':' . @helper::currency_formate($extras_price[$key], $vendordata->id) . '%0a';
-                    }
+        foreach ($data as $value) {
+            if ($value['variants_id'] != "") {
+                $item_p = $value['qty'] * $value['variants_price'];
+                $variantsdata = '(' . $value['variants_name'] . ')';
+            } else {
+                $variantsdata = "";
+                $item_p = $value['qty'] * $value['price'];
+            }
+            $extras_id = explode(",", $value['extras_id']);
+            $extras_name = explode(",", $value['extras_name']);
+            $extras_price = explode(",", $value['extras_price']);
+            $item_message = @helper::appdata($vendordata->id)->item_message;
+            $itemvar = ["{qty}", "{item_name}", "{variantsdata}", "{item_price}"];
+            $newitemvar = [$value['qty'], $value['item_name'], $variantsdata, @helper::currency_formate($item_p, $vendordata->id)];
+            $pagee[] = str_replace($itemvar, $newitemvar, $item_message);
+            if ($value['extras_id'] != "") {
+                foreach ($extras_id as $key => $addons) {
+                    @$pagee[] .= "👉" . $extras_name[$key] . ':' . @helper::currency_formate($extras_price[$key], $vendordata->id) . '%0a';
                 }
             }
-            $items = implode(",", $pagee);
-        
-      
+        }
+        $items = implode(",", $pagee);
+
+
         $itemlist = str_replace(',', '%0a', $items);
         if ($orderdata->order_type == 1) {
             $order_type = trans('labels.delivery');
@@ -1014,9 +1036,8 @@ Click here for next order 👇
         $var = ["{delivery_type}", "{order_no}", "{item_variable}", "{sub_total}", "{total_tax}", "{delivery_charge}", "{discount_amount}", "{grand_total}", "{notes}", "{customer_name}", "{customer_mobile}", "{address}", "{building}", "{landmark}", "{postal_code}", "{date}", "{time}", "{payment_type}", "{store_name}", "{track_order_url}", "{store_url}"];
         $newvar = [$order_type, $order_number, $itemlist, @helper::currency_formate($orderdata->sub_total, $vendordata->id), @helper::currency_formate($orderdata->tax, $vendordata->id), @helper::currency_formate($orderdata->delivery_charge, $vendordata->id), @helper::currency_formate($orderdata->discount_amount, $vendordata->id), helper::currency_formate($orderdata->grand_total, $vendordata->id), $orderdata->order_notes, $orderdata->customer_name, $orderdata->mobile, $orderdata->address, $orderdata->building, $orderdata->landmark, $orderdata->postal_code, $payment_type, $vendordata->name, URL::to("/track-order/" . $order_number), URL::to($vendordata->slug)];
         $whmessage = str_replace($var, $newvar, str_replace("\n", "%0a", @helper::appdata($vendordata->id)->whatsapp_message));
-        
+
         return $whmessage;
-        
     }
 
     // dynamic email configration
