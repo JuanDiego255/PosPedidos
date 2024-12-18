@@ -578,6 +578,7 @@ class helper
                     $response = $client->post('https://pos.safeworsolutions.com/api/create-order', [
                         'json' => [
                             'total' => $grand_total,
+                            'envio' => $delivery_charge,
                             'notes' => $notes,
                             'products' => $data_to_api
                         ]
