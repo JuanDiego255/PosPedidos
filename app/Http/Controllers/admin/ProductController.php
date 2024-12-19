@@ -112,7 +112,7 @@ class ProductController extends Controller
             $response = $client->post('https://pos.safeworsolutions.com/api/create-products', [
                 'json' => [
                     'id' => $product->id,
-                    'marca' => $request->product_name,
+                    'nombre' => $request->product_name,
                     'descripcion' => $request->description,
                     'precio_compra' => $original_price,
                     'precio_venta' => $price,
