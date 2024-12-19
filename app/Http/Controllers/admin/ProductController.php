@@ -81,7 +81,7 @@ class ProductController extends Controller
                     }
                 }
             }
-            
+
             $extrasToSync = [];
             foreach ($request->extras_name as $key => $no) {
                 if (@$no != "" && @$request->extras_price[$key] != "") {
@@ -235,6 +235,7 @@ class ProductController extends Controller
                     'precio_compra' => $original_price,
                     'precio_venta' => $price,
                     'impuesto' => $request->tax,
+                    'kind' => 'update_all',
                     'extras' => $this->prepareExtras($request)
                 ]
             ]);
@@ -357,14 +358,39 @@ class ProductController extends Controller
     public function status($slug, $status)
     {
         try {
+            DB::beginTransaction();
             $checkproduct = Item::where('slug', $slug)->first();
             $checkproduct->is_available = $status;
             $checkproduct->save();
+            //Actualizar estado en POS RESTAURANT
+            $client = new Client();
+            $response = $client->post('https://pos.safeworsolutions.com/api/update-products', [
+                'json' => [
+                    'id' => $checkproduct->id,
+                    'status' => $status,
+                    'kind' => 'update_status'
+                ]
+            ]);
+
+            if ($response->getStatusCode() == 200) {
+                $responseData = json_decode($response->getBody()->getContents(), true);
+                if (isset($responseData['status']) && $responseData['status'] === true) {
+                    DB::commit();
+                    return redirect('admin/products/')->with('success', $responseData['msg']);
+                } else {
+                    DB::rollBack();
+                    return redirect('admin/products/')->with('error', $responseData['msg'] ?? 'Error desconocido');
+                }
+            } else {
+                dd($response->getBody()->getContents());
+            }
+            DB::commit();
             if ($status == 2) {
                 Cart::where('item_id', $checkproduct->id)->delete();
             }
             return redirect('admin/products')->with('success', trans('messages.success'));
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->back()->with('error', trans('messages.wrong'));
         }
     }
